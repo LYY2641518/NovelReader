@@ -3,6 +3,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
+from core.setting import FONT_TW_SERIF
 
 
 class SearchBarWidget(BoxLayout):
@@ -31,14 +32,16 @@ class SearchBarWidget(BoxLayout):
         self.input = TextInput(
             hint_text="輸入小說名稱 / 關鍵字",
             multiline=False,
-            size_hint_x=0.8
+            size_hint_x=0.8,
+            font_name=str(FONT_TW_SERIF)
         )
 
         # 2. 搜尋按鈕
         self.button = Button(
-            text="Search",
+            text="搜尋",
             size_hint_x=0.2
         )
+        self.button.font_name = str(FONT_TW_SERIF)
 
         # bind event
         self.button.bind(on_press=self._on_button_press)

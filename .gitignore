@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage
+.pytest_cache/
+coverage.xml
+
+# Virtual environments
+.env/
+.venv/
+venv/
+ENV/
+env/
+__pypackages__/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Kivy
+# (Kivy may store logs in user home; ignore project .kivy if created)
+.kivy/
+
+# Application data and downloads
+downloads/
+*.log
+
+# MyPy
+.mypy_cache/
+
+# Temporary files
+*.tmp
+*.temp
