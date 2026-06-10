@@ -17,7 +17,7 @@ class LibraryScreen(Screen):
         self.layout = BoxLayout(orientation='vertical')
 
         header = BoxLayout(orientation='horizontal', size_hint_y=None, height=48)
-        header.add_widget(Label(text='書庫', font_name=str(FONT_TW_SERIF)))
+        header.add_widget(Label(text='書庫', font_name=str(FONT_TW_SERIF),size_hint_x=0.8))
         back = Button(text='返回搜尋', size_hint_x=0.2, font_name=str(FONT_TW_SERIF))
         back.bind(on_press=lambda inst: self._back_to_search())
         header.add_widget(back)
