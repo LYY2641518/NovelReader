@@ -193,9 +193,39 @@ def fetch_full_novel(index_url,folder_path, cancel_event=None, progress_callback
                         pages.append('https://m.wfxs.tw' + f'/booklist/{bid}.html')
                     else:
                         pages.append(list_url)
-                    # fetch sequential pages until empty
+
+                    total_chapters = None
+                    total_pages = None
+                    try:
+                        first_resp = rq.get(pages[0], timeout=10)
+                        if first_resp.status_code == 200:
+                            first_resp.encoding = 'utf-8'
+                            first_soup = BeautifulSoup(first_resp.text, 'html.parser')
+                            el_count = first_soup.find(id='bh_chat_count')
+                            if el_count and el_count.get_text(strip=True).isdigit():
+                                total_chapters = int(el_count.get_text(strip=True))
+                            else:
+                                text_node = first_soup.find(text=lambda t: t and '共' in t and '章' in t)
+                                if text_node:
+                                    rr = re.search(r'共\s*(\d+)\s*章', text_node)
+                                    if rr:
+                                        try:
+                                            total_chapters = int(rr.group(1))
+                                        except Exception:
+                                            total_chapters = None
+                            links = first_soup.select('ul#html_box li a') or first_soup.select('div.entry ul li a')
+                            if links:
+                                per_page = len(links)
+                                if total_chapters and per_page:
+                                    total_pages = -(-total_chapters // per_page)
+                    except Exception:
+                        total_pages = None
+
+                    # fetch sequential pages until empty or we reach total_pages
                     page = 2
                     while True:
+                        if total_pages is not None and page > total_pages:
+                            break
                         if not bid:
                             break
                         purl = 'https://m.wfxs.tw' + f'/booklist/{bid}/{page}.html'
@@ -203,6 +233,12 @@ def fetch_full_novel(index_url,folder_path, cancel_event=None, progress_callback
                             rtest = rq.get(purl, timeout=8)
                             if rtest.status_code != 200:
                                 break
+                            if total_pages is None:
+                                rtest.encoding = 'utf-8'
+                                test_soup = BeautifulSoup(rtest.text, 'html.parser')
+                                links = test_soup.select('ul#html_box li a') or test_soup.select('div.entry ul li a')
+                                if not links:
+                                    break
                             pages.append(purl)
                         except Exception:
                             break

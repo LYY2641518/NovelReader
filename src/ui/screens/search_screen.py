@@ -30,7 +30,7 @@ class SearchScreen(Screen):
     def _build_ui(self):
 
         top_bar = BoxLayout(size_hint_y=0.08)
-        top_bar.add_widget(Label(text="小說爬蟲", font_name=str(FONT_TW_SERIF)))
+        top_bar.add_widget(Label(text="小說閱讀器", font_name=str(FONT_TW_SERIF)))
         lib_btn = Button(text='書庫', size_hint_x=0.2, font_name=str(FONT_TW_SERIF))
         lib_btn.bind(on_press=lambda inst: self._open_library())
         top_bar.add_widget(lib_btn)

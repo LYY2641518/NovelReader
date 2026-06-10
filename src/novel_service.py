@@ -275,6 +275,20 @@ def get_book_details(index_url: str):
 
     # helper: fetch chapters across paginated booklist pages
     def _gather_booklist_pages(base_url):
+        def _extract_total_chapters(soup):
+            el = soup.find(id='bh_chat_count')
+            if el and el.get_text(strip=True).isdigit():
+                return int(el.get_text(strip=True))
+            m = soup.find(text=lambda t: t and '共' in t and '章' in t)
+            if m:
+                rr = re.search(r'共\s*(\d+)\s*章', m)
+                if rr:
+                    try:
+                        return int(rr.group(1))
+                    except Exception:
+                        pass
+            return None
+
         chapters = []
         try:
             parsed = rq.utils.urlparse(base_url)
@@ -289,6 +303,7 @@ def get_book_details(index_url: str):
 
         page = 1
         seen = set()
+        total_pages = None
         while True:
             if page == 1:
                 # try /booklist/<id>.html first
@@ -314,6 +329,11 @@ def get_book_details(index_url: str):
                 links = msoup.select('ul#html_box li a') or msoup.select('div.entry ul li a') or msoup.select('div.catalog ul li a')
                 if not links:
                     break
+                if page == 1:
+                    total_chapters = _extract_total_chapters(msoup)
+                    per_page = len(links)
+                    if total_chapters and per_page:
+                        total_pages = -(-total_chapters // per_page)
                 added = 0
                 for a in links:
                     t = a.get_text(strip=True)
@@ -329,6 +349,8 @@ def get_book_details(index_url: str):
             except Exception:
                 break
             page += 1
+            if total_pages is not None and page > total_pages:
+                break
             # safety cap
             if page > 1000:
                 break
