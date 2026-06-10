@@ -56,17 +56,28 @@ class LibraryScreen(Screen):
             reader.load_book(title)
             if last:
                 reader.load_chapter(last)
-            else:
-                # open book screen to pick chapter
-                try:
-                    book_screen = app.screen_manager.get_screen('book')
-                    # load details from saved index page (index_page.html) if exists
-                    # fallback: just show book screen without details
-                    book_screen.load_details(title, None, {})
-                    app.screen_manager.current = 'book'
-                    return
-                except Exception:
-                    pass
+                app.screen_manager.current = 'reader'
+                return
+
+            # if no last read, show the book screen with local chapter list
+            try:
+                chapters = novel_service.list_chapters(title)
+                local_details = {
+                    'title': title,
+                    'author': None,
+                    'summary': '此書已離線下載，無法取得線上摘要',
+                    'total': len(chapters),
+                    'chapters': [{'title': ch, 'url': None} for ch in chapters]
+                }
+
+                book_screen = app.screen_manager.get_screen('book')
+                book_screen.load_details(title, None, local_details)
+                app.screen_manager.current = 'book'
+                return
+            except Exception:
+                pass
+
+            # fallback to reader if nothing else works
             app.screen_manager.current = 'reader'
 
     def _back_to_search(self):

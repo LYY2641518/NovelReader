@@ -1,13 +1,13 @@
 from pathlib import Path
 import os
-from core.setting import BASE_DIR
+from core.setting import DATA_DIR
 from services import novel_search
 import requests as rq
 from bs4 import BeautifulSoup
 import re
 
 
-DOWNLOAD_DIR = Path(BASE_DIR) / "downloads"
+DOWNLOAD_DIR = Path(DATA_DIR) / "downloads"
 
 
 def ensure_download_dir():
@@ -29,6 +29,9 @@ def search(keyword: str):
     """
     base = 'https://m.wfxs.tw'
     session = rq.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    })
 
     try:
         resp = session.get(f"{base}/s/", timeout=10)

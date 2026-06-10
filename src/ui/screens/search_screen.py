@@ -70,9 +70,16 @@ class SearchScreen(Screen):
     def on_search(self, keyword: str):
         self._log(f"收到搜尋請求: {keyword}")
 
-        result = novel_service.search(keyword)
+        def _worker():
+            result = novel_service.search(keyword)
 
-        self._update_result(result)
+            def _ui(dt):
+                self._update_result(result)
+
+            Clock.schedule_once(_ui, 0)
+
+        t = Thread(target=_worker, daemon=True)
+        t.start()
 
     # ======================================
     # UI UPDATE
